@@ -14,6 +14,15 @@
         <element id="directory" name="classes">
           <element id="module-output" name="Google-tasks-clone-backend" />
         </element>
+        <element id="directory" name="lib">
+          <element id="library" level="project" name="Maven: mysql:mysql-connector-java:8.0.29" />
+          <element id="library" level="project" name="Maven: com.google.protobuf:protobuf-java:3.19.4" />
+          <element id="library" level="project" name="Maven: org.eclipse:yasson:2.0.1" />
+          <element id="library" level="project" name="Maven: jakarta.json.bind:jakarta.json.bind-api:2.0.0" />
+          <element id="library" level="project" name="Maven: jakarta.json:jakarta.json-api:2.0.0" />
+          <element id="library" level="project" name="Maven: org.glassfish:jakarta.json:module:2.0.0" />
+          <element id="library" level="project" name="Maven: commons-codec:commons-codec:1.15" />
+        </element>
       </element>
       <element id="directory" name="META-INF">
         <element id="file-copy" path="$PROJECT_DIR$/target/Google-tasks-clone-backend-0.1.0/META-INF/MANIFEST.MF" />
