@@ -1,4 +1,4 @@
-# Google Tasks Clone - Servlet Back-end -using servlet
+# Google Tasks Clone - Servlet Back-end
 
 ### Version
 0.1.0
