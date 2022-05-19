@@ -22,14 +22,53 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 @MultipartConfig(location = "/tmp",maxFileSize = 10 * 1024 * 1024)
 @WebServlet(name = "UserServlet", value = "/v1/users/*")
 public class UserServlet extends HttpServlet2 {
 
+    private Logger logger = Logger.getLogger(UserServlet.class.getName());
 
     @Resource(name = "java:comp/env/jdbc/pool")
     private volatile DataSource pool;
+
+    private UserDTO getUser(HttpServletRequest req) {
+        if (!(req.getPathInfo() != null &&
+                (req.getPathInfo().replaceAll("/", "").length() == 36))) {
+            throw new ResponseStatusException(404, "Invalid user id");
+        }
+
+        String userId = req.getPathInfo().replaceAll("/", "");
+
+        try (Connection connection = pool.getConnection()) {
+            PreparedStatement stm = connection.prepareStatement("SELECT * FROM user WHERE id=?");
+            stm.setString(1, userId);
+            ResultSet rst = stm.executeQuery();
+
+            if (!rst.next()) {
+                throw new ResponseStatusException(404, "Invalid user id");
+            } else {
+                String name = rst.getString("full_name");
+                String email = rst.getString("email");
+                String password = rst.getString("password");
+                String picture = rst.getString("profile_pic");
+                return new UserDTO(userId, name, email, password, picture);
+            }
+        } catch (SQLException e) {
+            throw new ResponseStatusException(500, "Failed to fetch the user info", e);
+        }
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+        UserDTO user = getUser(req);
+        Jsonb jsonb = JsonbBuilder.create();
+        resp.setContentType("application/json");
+        jsonb.toJson(user, resp.getWriter());
+
+    }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -123,4 +162,34 @@ public class UserServlet extends HttpServlet2 {
         }
     }
 
+    @Override
+    protected void doPatch(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        super.doPatch(req, resp);
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        UserDTO user = getUser(req);
+        try (Connection connection = pool.getConnection()) {
+            PreparedStatement stm = connection.prepareStatement("DELETE FROM user WHERE id=?");
+            stm.setString(1, user.getId());
+            if (stm.executeUpdate() != 1) {
+                throw new SQLException("Failed to delete the user");
+            }
+            resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
+
+            new Thread(()->{
+                Path imagePath = Paths.get(getServletContext().getRealPath("/"), "uploads",
+                        user.getId());
+                try {
+                    Files.deleteIfExists(imagePath);
+                } catch (IOException e) {
+                    logger.warning("Failed to delete the image: " + imagePath.toAbsolutePath());
+                }
+            }).start();
+
+        } catch (SQLException e) {
+            throw new ResponseStatusException(500, e.getMessage(), e);
+        }
+    }
 }
