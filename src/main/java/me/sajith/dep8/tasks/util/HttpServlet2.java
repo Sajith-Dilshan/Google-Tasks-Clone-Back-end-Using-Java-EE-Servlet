@@ -20,7 +20,9 @@ public class HttpServlet2 extends HttpServlet {
 
     private final Logger logger = Logger.getLogger(HttpServlet2.class.getName());
 
+    protected  void doPatch(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException{
 
+    }
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
