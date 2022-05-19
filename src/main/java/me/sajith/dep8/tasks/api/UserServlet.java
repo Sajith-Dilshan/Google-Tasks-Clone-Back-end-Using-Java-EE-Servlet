@@ -21,6 +21,10 @@ public class UserServlet extends HttpServlet2 {
         }
 
 
+        if (request.getPathInfo() != null && !request.getPathInfo().equals("/")) {
+            throw new ResponseStatusException(HttpServletResponse.SC_METHOD_NOT_ALLOWED, "Invalid end point for a POST request");
+        }
+
 
         String name = request.getParameter("name");
         String email = request.getParameter("email");
