@@ -3,4 +3,14 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
          version="4.0">
+    <servlet>
+        <servlet-name>UserServlet</servlet-name>
+        <servlet-class>me.sajith.dep8.tasks.api.UserServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>TaskListServlet</servlet-name>
+        <servlet-class>me.sajith.dep8.tasks.api.TaskListServlet</servlet-class>
+    </servlet>
+
 </web-app>
