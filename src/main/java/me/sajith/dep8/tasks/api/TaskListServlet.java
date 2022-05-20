@@ -126,7 +126,33 @@ public class TaskListServlet extends HttpServlet2 {
     }
 
 
+    @Override
+    protected void doPatch(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        if (req.getContentType() == null || !req.getContentType().startsWith("application/json")) {
+            throw new ResponseStatusException(415, "Invalid content type or content type is empty");
+        }
 
+        TaskListDTO oldTaskList = getTaskList(req);
+        Jsonb jsonb = JsonbBuilder.create();
+        TaskListDTO newTaskList = jsonb.fromJson(req.getReader(), TaskListDTO.class);
+
+        if (newTaskList.getTitle() == null || newTaskList.getTitle().trim().isEmpty()) {
+            throw new ResponseStatusException(400, "Invalid title or title is empty");
+        }
+
+        try (Connection connection = pool.get().getConnection()) {
+            PreparedStatement stm = connection.prepareStatement("UPDATE task_list SET name=? WHERE id=?");
+            stm.setString(1, newTaskList.getTitle());
+            stm.setInt(2, oldTaskList.getId());
+            if (stm.executeUpdate() != 1) {
+                throw new SQLException("Failed to update the task list");
+            }
+
+            resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
+        } catch (SQLException e) {
+            throw new ResponseStatusException(500, e.getMessage(), e);
+        }
+    }
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
