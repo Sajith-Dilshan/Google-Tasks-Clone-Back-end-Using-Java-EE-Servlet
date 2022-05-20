@@ -25,7 +25,7 @@ import java.util.UUID;
 import java.util.logging.Logger;
 
 @MultipartConfig(location = "/tmp",maxFileSize = 10 * 1024 * 1024)
-@WebServlet(name = "UserServlet", value = "/v1/users/*")
+@WebServlet(name = "UserServlet")
 public class UserServlet extends HttpServlet2 {
 
     private Logger logger = Logger.getLogger(UserServlet.class.getName());
