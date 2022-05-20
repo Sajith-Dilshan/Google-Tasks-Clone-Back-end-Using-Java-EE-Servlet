@@ -15,6 +15,7 @@ import javax.servlet.annotation.*;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -171,4 +172,35 @@ public class TaskListServlet extends HttpServlet2 {
         }
 
     }
+
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String pattern = "/([A-Fa-f0-9\\-]{36})/lists/?";
+        Matcher matcher = Pattern.compile(pattern).matcher(req.getPathInfo());
+        if (matcher.find()){
+            String userId = matcher.group(1);
+
+            try (Connection connection = pool.get().getConnection()) {
+                PreparedStatement stm = connection.
+                        prepareStatement("SELECT * FROM task_list t WHERE t.user_id=?");
+                stm.setString(1,userId);
+                ResultSet rst = stm.executeQuery();
+
+                ArrayList<TaskListDTO> taskLists = new ArrayList<>();
+                while (rst.next()){
+                    int id = rst.getInt("id");
+                    String title = rst.getString("name");
+                    taskLists.add(new TaskListDTO(id, title, userId));
+                }
+
+                Jsonb jsonb = JsonbBuilder.create();
+                jsonb.toJson(taskLists, resp.getWriter());
+
+            } catch (SQLException e) {
+                throw new ResponseStatusException(500, e.getMessage(), e);
+            }
+        }
+    }
+}
 }
