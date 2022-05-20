@@ -4,6 +4,7 @@ import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
 import jakarta.json.bind.JsonbException;
 import me.sajith.dep8.tasks.dto.TaskListDTO;
+import me.sajith.dep8.tasks.dto.TaskListsDTO;
 import me.sajith.dep8.tasks.util.HttpServlet2;
 import me.sajith.dep8.tasks.util.ResponseStatusException;
 
@@ -195,7 +196,7 @@ public class TaskListServlet extends HttpServlet2 {
                 }
 
                 Jsonb jsonb = JsonbBuilder.create();
-                jsonb.toJson(taskLists, resp.getWriter());
+                jsonb.toJson(new TaskListsDTO(taskLists), resp.getWriter());
 
             } catch (SQLException e) {
                 throw new ResponseStatusException(500, e.getMessage(), e);
