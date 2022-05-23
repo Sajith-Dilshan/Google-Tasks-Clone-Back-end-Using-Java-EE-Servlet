@@ -13,4 +13,9 @@
         <servlet-class>me.sajith.dep8.tasks.api.TaskListServlet</servlet-class>
     </servlet>
 
+    <servlet>
+        <servlet-name>TaskServlet</servlet-name>
+        <servlet-class>me.sajith.dep8.tasks.api.TaskServlet</servlet-class>
+    </servlet>
+
 </web-app>

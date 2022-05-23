@@ -3,9 +3,12 @@ package me.sajith.dep8.tasks.listener;
 import javax.annotation.Resource;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import javax.servlet.annotation.WebListener;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -16,6 +19,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+@WebListener
 public class DBInitializer implements ServletContextListener {
 
 
@@ -26,6 +30,7 @@ public class DBInitializer implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
+        System.out.println("working db");
 
         final String[] tables = {"task", "task_list", "user", "sub_task"};
         final List<String> tableList = new ArrayList<>();
